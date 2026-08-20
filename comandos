@@ -1,0 +1,17 @@
+CREATE USER backend_user WITH PASSWORD 'admin123';
+CREATE DATABASE airport_db OWNER backend_user;
+
+\c airport_db
+
+ALTER SCHEMA public OWNER TO backend_user;
+GRANT ALL ON SCHEMA public TO backend_user;
+GRANT CREATE ON SCHEMA public TO backend_user;
+
+ALTER DEFAULT PRIVILEGES FOR USER backend_user IN SCHEMA public
+GRANT ALL ON TABLES TO backend_user;
+
+ALTER DEFAULT PRIVILEGES FOR USER backend_user IN SCHEMA public
+GRANT ALL ON SEQUENCES TO backend_user;
+
+ALTER DEFAULT PRIVILEGES FOR USER backend_user IN SCHEMA public
+GRANT ALL ON FUNCTIONS TO backend_user;

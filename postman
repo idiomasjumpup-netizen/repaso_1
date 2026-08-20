@@ -1,0 +1,317 @@
+{
+  "info": {
+    "_postman_id": "b2d2c3f0-aaaa-bbbb-cccc-123456789000",
+    "name": "Aiport API (Django + Postgres + JWT + Mongo)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "serviceTypeId", "value": "" },
+    { "key": "vehicleServiceId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Public) - POST /api/auth/register/",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register/", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user1\",\n  \"email\": \"user1@mail.com\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+            "name": "Login (JWT) - POST /api/auth/login/ (save tokens)",
+            "event": [
+                {
+                "listen": "test",
+                "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                    "let jsonData = {};",
+                    "try { jsonData = pm.response.json(); } catch (e) {}",
+                    "",
+                    "if (jsonData.access) {",
+                    "  pm.collectionVariables.set('accessToken', jsonData.access);",
+                    "  pm.environment.set('accessToken', jsonData.access);",
+                    "}",
+                    "",
+                    "if (jsonData.refresh) {",
+                    "  pm.collectionVariables.set('refreshToken', jsonData.refresh);",
+                    "  pm.environment.set('refreshToken', jsonData.refresh);",
+                    "}",
+                    "",
+                    "pm.test('Token access recibido', function () {",
+                    "  pm.expect(jsonData.access).to.be.a('string');",
+                    "});"
+                    ]
+                }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{baseUrl}}/api/auth/login/", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login", ""] },
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}"
+                }
+            }
+        },
+        {
+          "name": "Refresh (JWT) - POST /api/auth/refresh/ (save access)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.access) pm.collectionVariables.set('accessToken', jsonData.access);",
+                  "pm.test('Token access refrescado', function () { pm.expect(jsonData.access).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh/", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Postgres - Gates",
+      "item": [
+        {
+          "name": "List gates (Admin token) - GET /api/gates/",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/gates/", "host": ["{{baseUrl}}"], "path": ["api", "gates", ""] }
+          }
+        },
+        {
+          "name": "Create gate (Admin) - POST /api/gates/",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/gates/", "host": ["{{baseUrl}}"], "path": ["api", "gates", ""] },
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Toyota\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Postgres - Flights",
+      "item": [
+        {
+          "name": "List flights (Public) - GET /api/flights/",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/flights/", "host": ["{{baseUrl}}"], "path": ["api", "flights", ""] }
+          }
+        },
+        {
+          "name": "Create flight (Admin) - POST /api/flights/",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/flights/", "host": ["{{baseUrl}}"], "path": ["api", "flights", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gate\": 1,\n  \"modelo\": \"Corolla\",\n  \"anio\": 2020,\n  \"placa\": \"ABC-1234\",\n  \"color\": \"Rojo\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mongo - airlines",
+      "item": [
+        {
+          "name": "List service types (Auth) - GET /api/airlines/",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/airlines/", "host": ["{{baseUrl}}"], "path": ["api", "airlines", ""] }
+          }
+        },
+        {
+          "name": "Create service type (Auth) - POST /api/airlines/ (save serviceTypeId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.id) pm.collectionVariables.set('serviceTypeId', jsonData.id);",
+                  "pm.test('Se creó service type', function () { pm.expect(jsonData.id).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/airlines/", "host": ["{{baseUrl}}"], "path": ["api", "airlines", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cambio de aceite\",\n  \"description\": \"Aceite + filtro\",\n  \"base_price\": 35,\n  \"is_active\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Get service type by id (Auth) - GET /api/airlines/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/airlines/{{serviceTypeId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airlines", "{{serviceTypeId}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Patch service type (Auth) - PATCH /api/airlines/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/airlines/{{serviceTypeId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airlines", "{{serviceTypeId}}", ""]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": false\n}" }
+          }
+        },
+        {
+          "name": "Delete service type (Auth) - DELETE /api/airlines/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/airlines/{{serviceTypeId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airlines", "{{serviceTypeId}}", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mongo - flight_events",
+      "item": [
+        {
+          "name": "List vehicle services (Auth) - GET /api/flight-events/",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/flight-events/", "host": ["{{baseUrl}}"], "path": ["api", "flight-events", ""] }
+          }
+        },
+        {
+          "name": "Create vehicle service (Auth) - POST /api/flight-events/ (save vehicleServiceId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.id) pm.collectionVariables.set('vehicleServiceId', jsonData.id);",
+                  "pm.test('Se creó vehicle service', function () { pm.expect(jsonData.id).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/flight-events/", "host": ["{{baseUrl}}"], "path": ["api", "flight-events", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flight_id\": 1,\n  \"service_type_id\": \"{{serviceTypeId}}\",\n  \"kilometers\": 85000,\n  \"cost\": 40,\n  \"notes\": \"Se cambió filtro\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get vehicle service by id (Auth) - GET /api/flight-events/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/flight-events/{{vehicleServiceId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flight-events", "{{vehicleServiceId}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Patch vehicle service (Auth) - PATCH /api/flight-events/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flight-events/{{vehicleServiceId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flight-events", "{{vehicleServiceId}}", ""]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"cost\": 45,\n  \"notes\": \"Actualizado\"\n}" }
+          }
+        },
+        {
+          "name": "Delete vehicle service (Auth) - DELETE /api/flight-events/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/flight-events/{{vehicleServiceId}}/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flight-events", "{{vehicleServiceId}}", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

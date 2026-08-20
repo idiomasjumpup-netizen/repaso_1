@@ -1,0 +1,33 @@
+# Archivos de entorno y configuración local
+.env
+.env.local
+*.log
+
+# Backend (Python / Django)
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Frontend (React / Node)
+node_modules/
+dist/
+build/
+.next/
+
+# Mobile (Flutter / React Native / Expo)
+.expo/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+*.apk
+*.aab
+
+# VS Code / IDEs
+.vscode/
+.idea/
+.DS_Store
