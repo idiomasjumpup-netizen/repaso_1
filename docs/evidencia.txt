@@ -1,0 +1,3 @@
+Sistema Básico de Gestión de Vehículos y Reservas para una Empresa de Alquiler de Vehículos
+Fecha de generación: Thu Aug 20 2026 17:47:00 ECT
+Estado de servicios: Backend (Django), Web UI (React), App Móvil (Expo React Native), DB SQL (PostgreSQL), DB NoSQL (MongoDB) OK.

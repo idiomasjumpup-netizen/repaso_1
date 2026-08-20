@@ -1,14 +1,28 @@
 from rest_framework import serializers
-from .models import Gate, Flight
+from django.utils import timezone
+from .models import Product, Order
 
-class GateSerializer(serializers.ModelSerializer):
+
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Gate
-        fields = ["id", "code", "terminal", "is_available", "created_at"]
+        model = Product
+        fields = ["id", "name", "category", "is_available", "created_at"]
 
-class FlightSerializer(serializers.ModelSerializer):
-    gate_nombre = serializers.CharField(source="gate.code", read_only=True)
+
+class OrderSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source="product.name", read_only=True)
+    product_category = serializers.CharField(source="product.category", read_only=True)
+    order_time = serializers.DateTimeField(required=False, default=timezone.now)
 
     class Meta:
-        model = Flight
-        fields = ["id", "gate", "gate_nombre", "flight_number", "destination", "status", "created_at"]
+        model = Order
+        fields = [
+            "id",
+            "product",
+            "product_name",
+            "product_category",
+            "customer_name",
+            "status",
+            "order_time",
+            "created_at",
+        ]

@@ -67,9 +67,9 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": DB_ENGINE,
-            "NAME": os.getenv("DB_NAME", "airport_db"),
-            "USER": os.getenv("DB_USER", "postgres"),
-            "PASSWORD": os.getenv("DB_PASSWORD", "admin"),
+            "NAME": os.getenv("DB_NAME", "bakery_db"),
+            "USER": os.getenv("DB_USER", "backend_user"),
+            "PASSWORD": os.getenv("DB_PASSWORD", "admin123"),
             "HOST": os.getenv("DB_HOST", "127.0.0.1"),
             "PORT": os.getenv("DB_PORT", "5432"),
         }
@@ -85,13 +85,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 20,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
@@ -107,9 +108,12 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     os.getenv("CORS_ORIGIN", "http://localhost:5173"),
     "http://127.0.0.1:5173",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:19006",
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Mongo settings
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017")
-MONGO_DB = os.getenv("MONGO_DB", "airport_logs")
-CORS_ALLOW_ALL_ORIGINS = True
+MONGO_DB = os.getenv("MONGO_DB", "bakery_logs")

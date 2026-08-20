@@ -1,19 +1,23 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import GateViewSet, FlightViewSet
-from .airlines_views import airlines_list_create, airlines_detail
-from .flight_events_views import flight_events_list_create, flight_events_detail
-
+from .views import ProductViewSet, OrderViewSet
+from .bakery_mongo_views import (
+    suppliers_list_create,
+    suppliers_detail,
+    baking_sheets_list_create,
+    baking_sheets_detail,
+)
 
 router = DefaultRouter()
-router.register(r"gates", GateViewSet, basename="gates")
-router.register(r"flights", FlightViewSet, basename="flights")
+router.register(r"products", ProductViewSet, basename="products")
+router.register(r"orders", OrderViewSet, basename="orders")
 
 urlpatterns = [
-    # Mongo
-    path("airlines/", airlines_list_create),
-    path("airlines/<str:id>/", airlines_detail),
-    path("flight-events/", flight_events_list_create),
-    path("flight-events/<str:id>/", flight_events_detail),
+    # Mongo endpoints
+    path("suppliers/", suppliers_list_create, name="suppliers-list-create"),
+    path("suppliers/<str:id>/", suppliers_detail, name="suppliers-detail"),
+    path("baking-sheets/", baking_sheets_list_create, name="baking-sheets-list-create"),
+    path("baking-sheets/<str:id>/", baking_sheets_detail, name="baking-sheets-detail"),
 ]
+
 urlpatterns += router.urls

@@ -1,0 +1,8 @@
+Proyecto Alquiler de Vehículos - Backend
+GET /api/reservations/
+GET /api/reservations/9/
+POST /api/reservations/
+DELETE /api/reservations/4/
+INFO: reservation created successfully
+INFO: reservations service running
+WARN: reservation delay detected

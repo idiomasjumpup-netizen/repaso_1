@@ -1,7 +1,7 @@
 CREATE USER backend_user WITH PASSWORD 'admin123';
-CREATE DATABASE airport_db OWNER backend_user;
+CREATE DATABASE rental_db OWNER backend_user;
 
-\c airport_db
+\c rental_db
 
 ALTER SCHEMA public OWNER TO backend_user;
 GRANT ALL ON SCHEMA public TO backend_user;
